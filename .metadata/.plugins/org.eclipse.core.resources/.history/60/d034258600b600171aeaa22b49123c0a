@@ -1,0 +1,14 @@
+package com.SimpleCrawl;
+
+public class IndeedCraw {
+
+	public IndeedCraw() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public void test(){
+		System.out.println("good");
+		
+	}
+	
+}

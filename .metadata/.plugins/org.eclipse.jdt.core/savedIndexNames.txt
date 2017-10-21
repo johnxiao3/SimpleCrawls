@@ -1,0 +1,24 @@
+INDEX VERSION 1.127+G:\java projects\Simple Crawls\SimpleCrawls\.metadata\.plugins\org.eclipse.jdt.core
+1598635373.index
+1389104861.index
+3308819188.index
+676537277.index
+312681842.index
+3573589412.index
+3245915926.index
+810113790.index
+1264592406.index
+4244525529.index
+1131767095.index
+3012471879.index
+857849674.index
+158051821.index
+2703369633.index
+1479395177.index
+1012312289.index
+1664047065.index
+3962910055.index
+2160020244.index
+780656948.index
+515805991.index
+1919911021.index

@@ -1,0 +1,28 @@
+package com.SimpleCrawl;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class IndeedCraw {
+
+	public IndeedCraw() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public void test(){
+		System.out.println("good");
+	}
+	
+	public void connect()
+	{
+	 URL url = new URL("abc");  
+    // open url
+	 URLConnection con = (URLConnection)url.openConnection();  
+    // 得到URL的输入流  
+   InputStream input = con.getInputStream();  
+   // 设置数据缓冲  
+
+  
+	}
+}
