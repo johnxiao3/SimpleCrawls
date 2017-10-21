@@ -1,6 +1,10 @@
 package com.SimpleCrawl;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,11 +14,16 @@ import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 public class IndeedCraw {
 	
 	public String connectStr;
     public String urlStr="https://www.indeed.com/jobs?q=semiconductor&start=";
-
+    public int listCount = 0;
+    
 	public IndeedCraw() {
 		// TODO Auto-generated constructor stub
 	}
@@ -48,19 +57,46 @@ public class IndeedCraw {
 		connectStr = sb.toString();
 	}
 
-	public void titleMatch(){
-		String regex="title=\"([^\"]*)\"class=\"turnstileLink\"";
-		Pattern pattern=Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(connectStr);
-        int count = 0;
-        while(matcher.find()) {
-            count++;
-            //System.out.println("found: " + count + " : ");
-            System.out.println(matcher.group(1));
-        }
+	public void titleMatch() throws FileNotFoundException{
+		
+		
+		try {
+			File file =new File("Data.xls");
+			FileInputStream inputstream = new FileInputStream(file);
+			HSSFWorkbook workbook = new HSSFWorkbook(inputstream);
+			HSSFSheet sheet = workbook.getSheetAt(0);
+			HSSFRow rowhead;// = sheet.createRow(1);
+	        //rowhead.createCell(1).setCellValue("abc");
+	        
+	        
+	        String regex="title=\"([^\"]*)\"class=\"turnstileLink\"";
+			Pattern pattern=Pattern.compile(regex);
+	        Matcher matcher = pattern.matcher(connectStr);
+	       
+	        while(matcher.find()) {
+	            listCount++;
+	            //System.out.println("found: " + count + " : ");
+	            //System.out.println(matcher.group(1));
+	            rowhead = sheet.createRow(listCount);
+		        rowhead.createCell(0).setCellValue(matcher.group(1));
+	        }
+	        
+	        inputstream.close();
+
+            FileOutputStream outFile =new FileOutputStream(file);
+            workbook.write(outFile);
+            outFile.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 	
-	public void printTitle(int N){
+	public void printTitle(int N) throws FileNotFoundException{
 		int i;
 		urlStr="https://www.indeed.com/q-semiconductor-jobs.html";
 		this.connect();
@@ -72,4 +108,25 @@ public class IndeedCraw {
 			this.titleMatch();
 		}
 	}
+	
+	public void creatExcel(){
+		try{
+			String filename = "Data.xls" ;
+	        @SuppressWarnings("resource")
+	        HSSFWorkbook workbook = new HSSFWorkbook();
+	        HSSFSheet sheet = workbook.createSheet("Title");  
+	        HSSFRow rowhead = sheet.createRow((short)0);
+	        rowhead.createCell(0).setCellValue("Title");
+	        rowhead.createCell(1).setCellValue("Address");
+	
+	        FileOutputStream fileOut = new FileOutputStream(filename);
+	        workbook.write(fileOut);
+	        fileOut.close();
+	        //System.out.println("Your excel file has been generated!");
+		}
+        catch ( Exception ex ) {
+            System.out.println(ex);
+        }
+	}
+	
 }

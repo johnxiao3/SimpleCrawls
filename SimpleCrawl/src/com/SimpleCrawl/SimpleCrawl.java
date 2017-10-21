@@ -1,5 +1,7 @@
 package com.SimpleCrawl;
 
+import java.io.FileNotFoundException;
+
 public class SimpleCrawl {
 
 	public SimpleCrawl() {
@@ -10,7 +12,13 @@ public class SimpleCrawl {
 		// TODO Auto-generated method stub
 		IndeedCraw A=new IndeedCraw();
 		A.test();
-		A.printTitle(10);
+		A.creatExcel();
+		try {
+			A.printTitle(10);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-
 }
