@@ -1,5 +1,6 @@
 package com.SimpleCrawl;
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,9 +15,14 @@ import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.common.usermodel.Hyperlink;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFHyperlink;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CreationHelper;
 
 public class IndeedCraw {
 	
@@ -67,12 +73,18 @@ public class IndeedCraw {
 			HSSFSheet sheet = workbook.getSheetAt(0);
 			HSSFRow rowhead;// = sheet.createRow(1);
 	        //rowhead.createCell(1).setCellValue("abc");
-	        
+			
+			int ii=1;
+			for(ii=0;ii<10;ii++){
+				sheet.autoSizeColumn(ii);
+			}
+			
 	        
 	        String regex="title=\"([^\"]*)\"class=\"turnstileLink\"";
 			Pattern pattern=Pattern.compile(regex);
 	        Matcher matcher = pattern.matcher(connectStr);
-	       
+	        int initCount=listCount;
+	        int finalCount=listCount;
 	        while(matcher.find()) {
 	            listCount++;
 	            //System.out.println("found: " + count + " : ");
@@ -80,6 +92,57 @@ public class IndeedCraw {
 	            rowhead = sheet.createRow(listCount);
 		        rowhead.createCell(0).setCellValue(matcher.group(1));
 	        }
+	        finalCount=listCount;
+	        //company
+	        listCount=initCount;
+	        regex="<span class=\"company\">(?:\\s+)?(?:<a[^>]*>)?([^<]*)(?:</a>)?</span>";
+			pattern=Pattern.compile(regex);
+	        matcher = pattern.matcher(connectStr);
+	        while(matcher.find()) {
+	            listCount++;
+	            if (listCount<=finalCount)
+	            {
+	            	rowhead = sheet.getRow(listCount);
+	            	rowhead.createCell(1).setCellValue(matcher.group(1));
+	            }
+	       	}
+	        //location
+	        listCount=initCount;
+	        regex="<span class=(?:\")?location(?:\")?>([^<]*)</span>";
+			pattern=Pattern.compile(regex);
+	        matcher = pattern.matcher(connectStr);
+	        while(matcher.find()) {
+	            listCount++;
+	            if (listCount<=finalCount)
+	            {
+	            	rowhead = sheet.getRow(listCount);
+	            	rowhead.createCell(2).setCellValue(matcher.group(1));
+	            }
+	       	}
+	        //link:
+	        listCount=initCount;
+	        regex="<a(?:\\s+)?href=\"([^\"]*)\" target=\"_blank\"(?:\\s+)?"+
+	        		"rel=\"noopener nofollow\"";
+			pattern=Pattern.compile(regex);
+	        matcher = pattern.matcher(connectStr);
+	        
+	        String writeStr="";
+	        while(matcher.find()) {
+	            listCount++;
+	            if (listCount<=finalCount)
+	            {
+	            	rowhead = sheet.getRow(listCount);
+	            	HSSFCell cell=rowhead.createCell(3);
+	            	cell.setCellValue("Link");
+	            	writeStr="https://www.indeed.com"+matcher.group(1);
+	            	CreationHelper createHelper = workbook.getCreationHelper();
+	    	        Hyperlink link =createHelper.createHyperlink(HyperlinkType.URL);
+	    	        link.setAddress(writeStr);
+	            	cell.setHyperlink((org.apache.poi.ss.usermodel.Hyperlink) link);	            	            	
+	            }
+	       	}
+	        
+	        listCount=finalCount;
 	        
 	        inputstream.close();
 
