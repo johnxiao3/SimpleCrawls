@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<!--
+	Base template for JobSite (Jobs/IOS and NEE)
+	All the javascript frameworks are included in this template (jQuery and EXTJS)
+--><html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		
+		<!-- ExtJS CSS -->
+		<link rel="stylesheet" type="text/css" href="/ext-js/ext-3.2.0/resources/css/ext-all.css" />
+		
+		<!-- jQuery CSS -->
+				<link rel="stylesheet" type="text/css" href="/jawr/bundles/css/jquery-css.css?09/01/2017" media="screen" />
+		
+		<!-- 
+		<c:choose>
+			<c:when test="true">
+				<link rel="stylesheet" 
+					type="text/css" 
+					href="/jawr/bundles/css/intlTelInput.css?09/01/2017" 
+					media="screen" 
+				/>
+			</c:when>
+			<c:otherwise>
+				<jawr:style src="/bundles/intlTelInput.css" media="screen" />
+			</c:otherwise>
+		</c:choose>
+		-->
+		<!-- Ext JS Files -->
+		<script type="text/javascript" src="/ext-js/ext-3.2.0/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript" src="/ext-js/ext-3.2.0/ext-all.js"></script>
+		
+		<!-- jQuery JS -->	
+				<script language="javascript" src="/jawr/bundles/js/jquery.js?09/01/2017"></script>
+		
+		<script type="text/javascript">
+			$J = $.noConflict();
+		</script>
+		
+		<!-- International Telephone Input JS -->
+		<!-- 
+		<c:choose>
+			<c:when test="true">	
+				<script 
+					language="javascript" 
+					src="/jawr/bundles/js/intlTelInput.js?09/01/2017" 
+				/>
+			</c:when>	
+			<c:otherwise>
+				<jawr:script src="/bundles/intlTelInput.js" />
+			</c:otherwise>
+		</c:choose>
+		<c:choose>
+			<c:when test="true">	
+				<script 
+					language="javascript" 
+					src="/jawr/bundles/js/intlTelInput-util.js?09/01/2017" 
+				/>
+			</c:when>	
+			<c:otherwise>
+				<jawr:script src="/bundles/intlTelInput-util.js" />
+			</c:otherwise>
+		</c:choose>
+		 -->
+	
+			<title>Qualcomm Careers - Job Detail</title>
+	
+	
+			<!-- CSS -->
+			<!-- NOTE: Moved the load point for ext-all.css from here to JobsBaseTemplate,
+			JobsPopupTemplate and IOSRootTemplate because of conflict in date/calendar
+			classes with group_core.css from www site (so moving the load point to after
+			that helps overwrite those settings). -->
+	
+			<!-- Javascripts -->
+			<script type="text/javascript">
+				var contextPath = "";
+				var SERVLET_URL = contextPath+'/NeeHandler.do';
+				var JOBS_SERVLET_URL = contextPath+'/JobsHandler.do';
+			</script>
+			<!-- CSS --><link rel="stylesheet" type="text/css" media="screen" href="/jawrcssjawr/gzip_N1997898227/bundles/jobsHeaderFooter.css" />
+
+
+			<!-- JavaScript -->
+			<!--  Modified by c_skgupt for #39732 - Jobs Site Header/ Footer Changes--><script type="text/javascript" src="/jawrjsjawr/gzip_N2076404929/bundles/jobsHeaderFooter.js" ></script>
+
+
+			<script type="text/javascript">
+				document.createElement('header');
+				document.createElement('hgroup');
+				document.createElement('nav');
+				document.createElement('menu');
+				document.createElement('section');
+				document.createElement('article');
+				document.createElement('aside');
+				document.createElement('footer');
+			</script>
+					<link rel="stylesheet" type="text/css" href="/jawr/bundles/css/jobsForm.css?09/01/2017" media="screen" />
+			
+			<!-- Javascript -->	
+					<script language="javascript" src="/jawr/bundles/js/jobs-form.js?09/01/2017"></script>
+ 			<div id="skip">
+				<a href="#content">Skip Navigation</a>
+			</div>	
+					<script language="javascript" src="/jawr/bundles/js/jobs-jobDetails.js?09/01/2017"></script>	
+			<link rel="stylesheet" type="text/css" href="../css/jobs/solr.css?ts=9_58" />
+			<!-- Tag for Activity Group: Qualcomm WWU Pilot, Activity: Job Description Pages, Type: Page Views, Code: JavaScript -->
+			<!-- Start of DoubleClick Spotlight Tag: Please do not remove-->
+			<!-- Activity name for this tag is:Job Description Pages -->
+			<!-- Web site URL where tag should be placed:  -->
+			<!-- Creation Date:11/22/2011 -->
+				<script language="JavaScript">
+					<!--
+					var axel = Math.random()+"";
+					var a = axel * 10000000000000;
+					document.write('<img src="https://ad.doubleclick.net/activity;src=1576998;type=qualc429;cat=jobde537;ord='+ a + '?" width="1" height="1" border="0" />');
+					-->
+				</script>
+				<noscript>
+					<img src="https://ad.doubleclick.net/activity;src=1576998;type=qualc429;cat=jobde537;ord=1?" width="1" height="1" border="0" />
+				</noscript>
+			<!-- End of DoubleClick Spotlight Tag: Please do not remove-->
+			
+			<script type="text/javascript">
+				var FORMID = "jobDetailsForm";
+				$J(document).ready(function() {
+					init();
+					loadOverviewIframe();
+				});
+			</script>
+			<!-- Added below bootstrapResponse CSS / JS for JobSite Redesign Project -->
+							<link rel="stylesheet" type="text/css" href="/jawr/bundles/css/bootstrapResponse.css?09/01/2017" media="screen" />
+							<script language="javascript" src="/jawr/bundles/js/bootstrapResponse.js?09/01/2017"></script>
+					<link rel="stylesheet" type="text/css" href="/css/jobs/fonts.css" />
+					<!-- Replacing favicon with new grey icon for jobs-->
+					<link rel="shortcut icon" href="/images/favicon.ico" />
+	</head>
+	<body>
+			<div id="c1">
+				<!-- ~~~~~~ UI Formatting Variables ~~~~~~ -->
+				<!--
+				'rootFontSize' - master size setter for the whole NEE forms application.
+				You can change it to smallfont, smallerfont, bigfont, basefont so on
+				and it will affect the size of the application thru out NEE form page.
+				-->
+		
+				<!-- ~~~ FIELDS and related ~~~ -->
+				<!-- Use the following to indicate required fields (note: deliberately hard-coded to size: 'basefont'): -->
+				<!-- Use the following to give more info about the field (note: deliberately hard-coded to 'smallerfont'): -->
+		
+				<!-- Font for ERROR field on the page.  -->
+		
+				<!-- ~~~ NOTES fonts ~~~ -->
+				<!-- Use these for notes [mandatory]: -->
+		
+				<!-- ~~~ HIGHLIGHT fonts ~~~ -->
+				<!-- Use the following when you need something to be highlighted in bold (outside the field labels): -->
+		
+				<!-- ~~~ MISC fonts ~~~ -->
+		
+				<!-- ~~~ ILINK fonts and related ~~~ -->
+				<!-- Use these (except the root one below) for I-Link labels/title/content/etc: -->
+		
+				<!--
+				IMPORTANT: Please add "cellspacing='0'"
+				without fail in any table that uses style classes. Not doing so will cause
+				cells to be spaced. Could not correct that in the CSS because IE supports
+				one property and Firefox (and other browsers) support another - there is no
+				common ground to get rounded tables/panels without adding this cellspacing
+				attribute to tables. For usage reference see either beneficiaries.xhtml or
+				enrollments401k.xhtml:
+				-->
+				<!-- Kushal(c_kvyas) - Changing the encoding to UTF-8 -->
+				<!-- <c:set var="charSetValue" value="ISO-8859-1"/> -->
+				<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		
+				<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<!-- Not used c:set var="servernameWWW" value="qualcomm" />  -->
+			<div id="view_page" class="page-light"><html xmlns="http://www.w3.org/1999/xhtml">
+	<header class="navbar" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="https://www.qualcomm.com/">Qualcomm</a>
+			</div>
+			<ul class="list-inline pull-right primary-nav">
+				<li><a href="/public/search.xhtml" class="">Search Jobs</a></li>
+				<!-- Added link for Drop&Go to the header as per the Global Jobs project requirement, added checks for setting up the values -->
+				<li><a href="/public/dropAndGo.xhtml" class="">Drop &amp; Go</a></li>
+						<!-- MY PROFILE -->
+						<li><a class="" href="/login/login.xhtml"> 
+							<span>My Profile</span>
+							</a>
+						</li>
+				<li>
+					<a href="https://www.qualcomm.com/careers/faq"><span>How To Apply &amp; FAQs</span>
+						<span class="external-link-icon"></span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</header>
+</html>
+
+			<div id="jobsiteContent">
+			<div class="back_path">
+				<a href="https://www.qualcomm.com/careers" class="link-back"><span id="back_link">Go to Qualcomm Careers</span></a>
+			</div>
+				<div id="container-main" class="page-region-container">
+					<div class="clearfix" id="tabs-wrapper"></div>
+					<div id="main">
+		<section id="sidebar_left" class="active-trail region region-left sidebar">
+			<nav class="page-nav">
+				<ul class="menu">
+					<li class="first expanded active-trail has-children">
+						<ul class="menu">
+							<!-- Added for Solr -->
+							<li class="leaf no-children">
+								<a class="depth-1" href="/public/search.xhtml">
+									<span>Search Jobs</span>
+								</a>
+							</li> 
+							
+							<!--  c_achatt for 41647: Commenting the old job search link and enabling the new Solr Search link -->
+							<!-- <li class="active-trail leaf no-children active">
+								<a class="active depth-1 active-trail" title="" href="/public/jobSearch.xhtml">
+									<span>Search Jobs</span>
+								</a>
+							</li>  -->							
+							<!-- MY PROFILE -->
+							<!-- Font size of My jobs,My Profile,My Offer,LogOut has been changed for Global Jobs Redesign  Phase I -->
+									<!-- MY PROFILE -->									
+											<li class="expanded has-children">
+												<a class="depth-1" href="/login/login.xhtml">
+													<span>MyProfile</span>
+													
+												</a>
+											</li>
+							
+							<!-- End of My Profile -->
+						</ul>
+					</li>
+				</ul>
+				<div id="left_nav_bottom_section">
+					<BR />
+					<a id="right_bar_anchor" class="active-trail depth-0" style="display:none">
+						<span id="search_filters_title_left_nav"></span>
+					</a>
+					<br />
+					<span id="left_nav_bottom_span"></span>
+				</div>
+					<br />
+					<div>
+						<script src="//platform.linkedin.com/in.js" type="text/javascript">
+						</script>
+						<script type="IN/JYMBII" data-companyid="2017" data-format="inline">
+					</script>
+					</div>
+			</nav>
+		</section>
+						<div id="content_wrapper">
+							<div id="breadcrumb">
+								
+							</div>
+
+							<div id="content">
+								<div class="jobsite_content_holder">
+									<div class="jobsite_content_area">
+										<!-- br class="clear_all" /-->
+
+										<!-- Following is the place-holder for any module/page-level tabs: -->
+										<!-- Anirudh: removing the curvy containers as per the UI reeview with client.
+								<div class="curvy_container_top" />
+								<div class="curvy_container_body"> -->
+			<!-- Following hidden variable is required in all the form pages for pageDirty check: -->
+			<input type="hidden" id="pageDirty" name="pageDirty" value="N" /><form id="jobDetailsForm" name="jobDetailsForm" method="post" accept-charset="UTF-8" action="/public/jobDetails.xhtml;jsessionid=28AE356D68F9A9563701BAD1BB94AB68" enctype="application/x-www-form-urlencoded">
+		<table class="baseTableNoBorder" cellspacing="0" style="margin-bottom: 2px;">
+			<tr>
+				<td width="100%" class="pageHeader"><h4>Job Detail</h4></td>
+			</tr>
+		</table>
+				
+				<input type="hidden" value="false" id="validIOS" />
+				<input type="hidden" value="false" id="isProfileCompleted" />
+				<input type="hidden" value="1958733" name="requisitionId" />
+				<input type="hidden" value="" id="candidateTypeId" />
+				<input type="hidden" value="" id="candidateId" />
+				<input type="hidden" value="" id="referrer" name="page" />
+				<input type="hidden" id="facetQueryParam" name="facetQueryParam" value="" />
+				<input type="hidden" id="searchTerm" name="searchTerm" value="" />
+				<input type="hidden" id="sortInfo" name="sortInfo" value="" />
+				<input type="hidden" id="pageOffset" name="pageOffset" value="" />
+				<input type="hidden" id="recordsNumber" name="recordsNumber" value="" />
+				<input type="hidden" id="reqIdFromSolr" name="reqIdFromSolr" value="1958733" />
+				<!-- Added below hidden variable for project - OFCCP 503 Rule -->
+				<input type="hidden" id="paramString" name="paramString" value="requisitionId=1958733&amp;src=indeed" />
+				<input id="jobStatus" type="hidden" value="open" />
+				<input id="reqId" type="hidden" value="E1958733" />
+				
+				<input type="hidden" value="submit" id="action" name="action" />
+				<div style="display: none;" id="reqOverviewContentHidden"> </div>
+				<input type="hidden" id="requisitionOverview" name="requisitionOverview" value="" />
+							<table class="baseTableNoBorder" cellspacing="0">
+
+								<!-- Deepayan(c_deepay) Added variable 'widthEmptyContent' for log 34125-->
+								<tr>
+									<td colspan="2">
+
+										<table class="baseTableNoBorder" cellspacing="0">
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">Job Id
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+													<input type="hidden" value="1958733" id="requisitionId" />
+													E1958733
+												</td>
+											</tr>
+
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">Job Title
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%"><span id="jobDetailsForm:jobTitle">Process Technology/Foundry Engineering - Sr. Staff</span>
+												</td>
+											</tr>
+											<!-- Shravan Kumar(c_ssrini) - Log 35967 - No Posting Date for T Requisition 
+												Log 36896 - OFCCP Code review changes
+											-->
+												<tr>
+													<td class="basefontbold text_align_right" width="20%">Post Date
+													</td>
+													<td width="1%"></td>
+													<td class="basefont" width="79%">10/06/2017
+													</td>
+												</tr>
+											<!-- Log 35967 end -->
+											<!-- SHRAVAN KUMAR(c_ssrini) - Log 35965 - Requisition - Multi Division -->
+											<!-- SHRAVAN KUMAR(c_ssrini) - Log 36597 - Multi Division Additional Divisions listed twice -->
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">
+														Company
+													
+														-
+													
+														Division
+													
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+															<a href="http://www.qualcomm.com/about/businesses/qct">
+																	Qualcomm Technologies, Inc.
+																
+																	-
+																
+																	CDMA Technology
+																
+															</a>
+													<br />
+												</td>
+											</tr>
+											<!-- Log 35965 end -->
+											
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">Job Area
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+													Engineering - Hardware                
+													<!-- Added by c_rverma(Rajesh) for Log:35475 --> 
+													<br />
+												</td>
+											</tr>
+
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">Location
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+													California - San Diego
+													<!-- Added by c_rverma(Rajesh) for Log:35475 -->
+													<br />
+												</td>
+											</tr>
+												<tr>
+													<td class="basefontbold text_align_right" width="20%">Job Overview
+													</td>
+													<td width="1%">
+													</td>
+													<td class="basefont" width="79%">
+														<input type="hidden" value="Being part of the Process Technology team in the largest fabless design house, the candidate will be responsible for providing technical support to companys RF chip manufacturing lines in the fabs of our major foundry partners. In this role, the candidate will work closely with the foundry to manage QCTs RF product manufacturing.  Review and manage production WIP status, yield, product KPI in regular base, lead the foundry partners to create yield enhancement plan, provide NPI and tape-out support, and manage process related product reliability issues. 
+
+The candidate will be responsible for device and chip level data analysis, device target setting, process optimization, and product yield enhancement.  The candidate will use semiconductor process and device physics knowledge to perform data analysis, identify gaps, and design DOE for improvement. The candidate will need to drive process manufacturability improvements and judge results of process experiments with foundry partners.  Actively participate in many internal cross functional team meetings as well as QCT-foundry two way meetings.  
+" id="hdnJobOverview" /><span id="jobDetailsForm:jobOverview">Being part of the Process Technology team in the largest fabless design house, the candidate will be responsible for providing technical support to companys RF chip manufacturing lines in the fabs of our major foundry partners. In this role, the candidate will work closely with the foundry to manage QCTs RF product manufacturing.  Review and manage production WIP status, yield, product KPI in regular base, lead the foundry partners to create yield enhancement plan, provide NPI and tape-out support, and manage process related product reliability issues. 
+
+The candidate will be responsible for device and chip level data analysis, device target setting, process optimization, and product yield enhancement.  The candidate will use semiconductor process and device physics knowledge to perform data analysis, identify gaps, and design DOE for improvement. The candidate will need to drive process manufacturability improvements and judge results of process experiments with foundry partners.  Actively participate in many internal cross functional team meetings as well as QCT-foundry two way meetings.  
+</span>
+													</td>
+												</tr>
+													<tr>
+														<td class="basefontbold text_align_right" width="20%">
+														</td>
+														<td width="1%">
+														</td>
+														<td class="basefont" width="79%"><span id="jobDetailsForm:overviewAppendTextForUS">All Qualcomm employees are expected to actively support diversity on their teams, and in the Company.</span>
+														</td>
+													</tr>
+												<tr>
+													<td class="basefontbold text_align_right" width="20%">Minimum Qualifications
+													</td>
+													<td width="1%">
+													</td>
+													<td class="basefont" width="79%">
+														<input type="hidden" value="-Minimum 8 years of experience in semiconductor manufacturing, device engineering, yield enhancement, and process integration of CMOS process (e.g. 28nm or below).&lt;br/&gt;-Analog mixed signal and RF device, chip, and process requirements.&lt;br/&gt;" id="hdnMinimumQualifications" /><span id="jobDetailsForm:minimumQualifications">-Minimum 8 years of experience in semiconductor manufacturing, device engineering, yield enhancement, and process integration of CMOS process (e.g. 28nm or below).<br/>-Analog mixed signal and RF device, chip, and process requirements.<br/></span>
+													</td>
+												</tr>
+												<tr>
+													<td class="basefontbold text_align_right" width="20%">Preferred Qualifications
+													</td>
+													<td width="1%">
+													</td>
+													<td class="basefont" width="79%">
+														<input type="hidden" value="-5 years of experience in project management.
+-CMOS process integration and device physics
+-Experience with tools used for data analysis and tape-out support (e.g. DataPower, Jump, tools to view gds files, etc.)
+-Experience working with customers (internal &amp; external), and cross-functional teams
+-Experience working closely with foundry partners 
+-Ability to work across diverse technical groups
+" id="hdnPreferredQualifications" /><span id="jobDetailsForm:preferredQualifications">-5 years of experience in project management.
+-CMOS process integration and device physics
+-Experience with tools used for data analysis and tape-out support (e.g. DataPower, Jump, tools to view gds files, etc.)
+-Experience working with customers (internal & external), and cross-functional teams
+-Experience working closely with foundry partners 
+-Ability to work across diverse technical groups
+</span>
+													</td>
+												</tr>
+											<!-- Log 36597 end -->
+											<!-- Log 35743 - T Requisition security -->
+										<!-- Log 35743 end -->
+											<!-- Log38050 -For T Reqs, the Skills/Experience field should not display by c_skgupt -->
+											<!-- Modified by Vikram for Log 42305, changing the name from Skil/Experience to Basic Qualifications -->
+											
+											<!-- 
+												SHRAVAN KUMAR (c_ssrini) - Log 35739 - New Requisition Type T - Talent Pool
+												and new fields "Overview" and "Keywords"  
+												Log 36681 - Overview field alignment and text format
+												Log 36945 - Adding iframe to show Overwiew field content
+												Log 37062 - Remove the Tiny Mc Editor from the req page "overview" field
+												Log 37077 - OFCCP:  TinyMCEditor - Jobs Site - Req Summary
+											-->
+											<tr>
+											</tr>
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">Education Requirements
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+													<input type="hidden" value="Required: Master's, Electrical Engineering and/or Materials Science&lt;br/&gt;Preferred: Doctorate, Electrical Engineering and/or Materials Science" id="hdnEducationalRequirements" /><span id="jobDetailsForm:educationalRequirements">Required: Master's, Electrical Engineering and/or Materials Science<br/>Preferred: Doctorate, Electrical Engineering and/or Materials Science</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td class="basefontbold text_align_right" width="20%">
+													Keywords
+												</td>
+												<td width="1%"></td>
+												<td class="basefont" width="79%">
+													packaging, cmos, foundry, yield, 28nm, datapower, jump, spice
+												</td>
+											</tr>
+											<!-- Log 35739 end -->
+											
+											<!-- Deepayan (c_deepay)Modified the following section for log 36756 -->
+											<!-- End of log-36756 -->
+										</table>
+									</td>
+								</tr>
+
+								<!-- If Logged in and Authenticated User then display following section -->
+												<tr>
+													<td class="basefont" colspan="2" align="center">
+														You will need to  
+														<script type="text/javascript" src="/javax.faces.resource/oamSubmit.js.xhtml?ln=org.apache.myfaces"></script><script type="text/javascript">(!window.myfaces) ? window.myfaces = {} : null;(!myfaces.core) ? myfaces.core = {} : null;(!myfaces.core.config) ? myfaces.core.config = {} : null;myfaces.core.config.autoScroll = true;</script><a href="#" onclick="return myfaces.oam.submitForm('jobDetailsForm','jobDetailsForm:j_id_3_1s_1_2_11_2_1_2_2');">login</a><input type="hidden" name="autoScroll" />
+														into your profile to apply for this job.
+														<br />
+														If you are a  
+														<a href="#" onclick="return myfaces.oam.submitForm('jobDetailsForm','jobDetailsForm:j_id_3_1s_1_2_11_2_1_2_4');">new user, click here</a>
+														to create a profile.
+													</td>
+												</tr>
+												<!-- <tr>
+													<td colspan="2" align="center">
+														<a 
+															href="https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id=XXXXXXXXXX&state=XXXXXXXXXX&redirect_uri=httpss://jobs.qualcomm.com/public/jobDetails.xhtml?requisitionId=1958733"
+	                                           			>
+															<img 
+																id="connectToLinkedImg"
+																src="../images/jobs/Apply_with_linkedIn.png" 
+																alt="Connect to linkedIn" title="Connect to linkedIn"
+															/>
+	                                           			</a>
+													</td>
+												</tr>	 -->
+							</table>
+		<table id="includeMessageTable" class="basePanelNoFill" style="margin-top: 10px;">
+			<tr><td class="basefontgraybold">Messages</td></tr>
+			<!-- c_knavla (Khushbu) - Commented the below message as part of Log - 40995 -->
+			<!-- Fix for Log #33359 -->
+			<!-- <tr id="browserMsg" class="noscreen">
+				<td class="failureMessage">
+					If you are using IE9 please run it in compatibility mode. If you encounter difficulties completing your application please email 
+					<a href="mailto: staffing.systems@qualcomm.com">staffing.systems@qualcomm.com</a> 
+				</td>				
+			</tr> -->
+			<tr>
+				<td><div id="jobDetailsForm:jsfMessages"></div>
+					<a name="messages"></a>
+				</td>
+			</tr>
+		</table> <!-- If record found -->
+								<br />
+
+								<table class="baseTableNoBorder" cellspacing="0">
+									<tr>
+										<td class="basefont" width="50%">
+											<a id="prevPage" href="javascript:goBack();">Return To Search Results</a>
+										</td>
+										<td class="basefont text_align_right">
+												<a href="/public/mailToFriend.xhtml?requisitionId=1958733&amp;init=1">Send this Job to a Friend</a>
+										</td>
+									</tr>
+									
+									<tr>
+										<td colspan="2">  </td>
+									</tr>
+									
+									<tr><td colspan="2"> </td></tr> <!-- Added this deliberately to provide some breathing space -->
+									<tr>
+										<td colspan="2">
+											<font class="noteLabel">Applicants:</font>
+											<font class="noteMessage">
+												If you need an accommodation, during the application/hiring process, you may request an accommodation by sending email to <a href="mailto:accommodationsupport@qualcomm.com">accommodationsupport@qualcomm.com</a>
+											</font>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<font class="noteLabel">To all Staffing and Recruiting Agencies:</font>
+											<font class="noteMessage">
+											Our Careers Site is only for individuals seeking a job at Qualcomm.
+											Staffing and recruiting agencies and individuals being represented
+											by an agency are not authorized to use this site or to submit profiles,
+											applications or resumes, and any such submissions will be considered
+											unsolicited. Qualcomm does not accept unsolicited resumes or applications
+											from agencies. Please do not forward resumes to our jobs alias,
+											Qualcomm employees or any other company location. Qualcomm is not
+											responsible for any fees related to unsolicited resumes/applications.
+											</font>
+										</td>
+									</tr>
+									<tr>
+										<!-- Changed Text for the project - OFCCP 503 Rule Phase2 -->
+										<td colspan="2">
+											<font class="noteLabel">EEO employer: including race, gender, gender identity, sexual orientation, disability &amp; veterans status.</font>
+										</td>
+									</tr>
+								</table>
+
+				<input type="hidden" value="false" id="invalidReq" /><input type="hidden" name="jobDetailsForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:1" value="ZU/FQd4EiBW/ph3mdOXklADyBV7c9jC6TkhAJd9r17ykbsiDoDHZr7EJep1Rh6jHAoguBmpR4yO1OWxrLS/tKkWpaVFP6OPorvEv2xmghoawCKJGyWWaR1aXtom5kp901wm4e8a1iieTApnDtGrC636tDHky5AgsPrfIDWoGEI6k5W42CMcON7Fu7Vsm+bD0C9f4IafXY2h2xf2JiOh9n0JWf+0OQNfwbc5fZRR7jsVGN72Qr1cZZJ+K95rCFKUnaawIXl2GgGFAbJqN1UD4oZPL5hqMXvRKrXL9Eosg5VXxlmC4EtUbWYjpPRxoiNJ7vl1iCdSo/3/m1Pz11xh5cm4tlLqKQSRqAlNTLE7zs9E5KkgObHa5ftV9jkXkg1Lgj/d8ikx3FWWLA+fWBn8HHyBTSBYT7zf4+DYN4jdrrTAaG+LZ4mLShqXPZEpg8SMZMsT71gnIgQ2gSG2X2TeStnPwIogF+o9QJKFiFeGlBMn/7PrGuHwiRqwuvgt+0O1u3zUzpHJ9mmc7K3woqx1Pf5+ctL7gS+AEe3DneWQdl5j1j++rr1PL7gKWyGZeaJ5LLZiXDfmCCNLQ0CVZjRSeQWgu6kkuz1RSxI4TcLDSiFNN15npR9czvjps2TcT3DNs+svswvi0810h7HtM0pAQ2LdQjpeO2YxbfGJ43bedk9yK1XPGjycZfjdYFR7YKyVF6Zqwx4wxZf3M3FhmqRgQu5v3661QEZ3ncqZqJ/13s7Hm9zh+edO0BmdJo9j3Gu6qDCHT1hwppaLhU81hJQmZIvtuNr1LDQ20gnwTAxbemSvCbAdCZN7oipUpis3+EI6tNuChcCv1eKSst968l+7AR+qqr3ci+QZ23oiI4AkKk3GABHtWZZDElMCf+uLckLRj+zVb9oD81BaXPLoRDlaI+0Saw/AfDW+i4UHYi0jlu7WKdU2oGGvuL7jTtMExoseTLW/svH3ouWDiFKcUlVvYAriiCv9JOfMuSNxmbjiTEiLbFunvTfCeDa2oe+lFd/mRjflrsoDC7sAsxxOY+FEVXY7QVrExTXit56b56Q+bsHR1UcfyfkVlkbK1bUO1iBFJhJnRl+V9ztUre52NJ/0ZUDpVEQTj5pl9iokJ6h913yoT9yJlBwE7Z+R6sDxjZDL9miLjntRZy/OzCwdyQY2V/tc2gBRm17a485QAppFp95mOWeztqU3/1KXZ6S6U4pkcClut1T7paLUhfdd0gBMkWU2EnLUeC7PZ5QqymhU3VNbIIZJcYbsTtg7V8V+Lnv+06+fkDcKpCxzxLsThlfJmiawnl8RMa/Q9LcSYGKpKjyTOEzCa+hTMf22RYF0SJ+AXFX2qHBKAxL3pepOplYRyOKaZR97xgpdUJeqFEFNf1E7EedwusENdPq1gZArBVlJsO5bWyHPVN6/02kW4Zku/tQ9OLkf47W7Sz9OppN46kTCPOr0A5uiobixgb+j6LKEPPBQVrD4y/noYQRVc2cpmqGpXNXD0OwYimldLRAU6JtYPgdA/" /></form>
+										<!--</div>
+								<div class="curvy_container_bottom" />-->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="sidebar"></div>
+			<div id="termPopover"></div><footer>
+			<div class="footer-section">
+				<div class="container">
+					<ul class="list-inline separated footer-help">
+						<li><a href="https://www.qualcomm.com/about">About Qualcomm</a></li>
+						<li><a href="https://www.qualcomm.com/company/careers/contact">Contact Us</a></li>
+						<li><a href="https://www.qualcomm.com/careers">Careers</a></li>
+						<li><a href="https://www.qualcomm.com/about/buildings">Offices</a></li>
+					</ul>
+					<div class="brand clearfix">
+						<span class="brand-footer pull-right">Qualcomm</span>
+					</div>
+					<ul class="social">
+						 <li><a href="https://twitter.com/qualcomm" target="_blank" title="Twitter" class="twitter">Twitter</a></li>
+						 <li><a href="https://www.facebook.com/qualcomm" target="_blank" title="Facebook" class="facebook">Facebook</a></li>
+						 <li><a href="http://www.linkedin.com/company/2017" target="_blank" title="LinkedIn" class="linkedin">LinkedIn</a></li>
+						 <li><a href="https://www.youtube.com/qualcomm" target="_blank" title="YouTube" class="youtube">YouTube</a></li>
+						 <li><a href="https://plus.google.com/+qualcomm/posts" target="_blank" title="Google+" class="google">GooglePlus</a></li>
+						 <li><a href="http://www.pinterest.com/qualcomm/" target="_blank" title="Pinterest" class="pinterest">Pinterest</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-section footer-global">
+				<div class="container">
+					<ul class="list-inline separated">
+						<li><a href="https://www.qualcomm.com/site/terms-of-use">Terms of Use</a></li>
+						<li><a href="https://www.qualcomm.com/site/privacy">Privacy</a></li>
+						<li><a href="https://www.qualcomm.com/cookie-policy">Cookie Policy</a></li>
+						<li><p>©2013 QUALCOMM Incorporated and/or its subsidiaries. All Rights Reserved.</p></li>
+					</ul><br />
+					<p class="footer-disclaimer">Nothing in this material is an
+						offer to sell any of the components or devices referenced herein.<br />
+						References to &quot;Qualcomm&quot; may mean Qualcomm incorporated, or
+						subsidiaries or business units within the Qualcomm corporate
+						structure, as applicable.<br />Materials that are as of a specific date,
+						including but not limited to press releases, presentations, blog
+						posts and webcasts, may have been superseded by subsequent events
+						or disclosures.</p>
+				</div>
+			</div>
+		</footer>
+			</div>
+			
+			<script type="text/javascript">
+				var utag_data = {
+				//hash goes here
+				}
+			</script>
+			<!-- Log:46034 c_rverma Addeed to dynamically change the Tealium JS url based on environment -->
+			<script type="text/javascript">
+			    (function(a,b,c,d){
+			    a="//tags.tiqcdn.com/utag/qualcomm/qualcomm-ember/prod/utag.js";
+			    b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+			    a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+			    })();
+			</script>
+				<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			</div>
+	
+<script type="text/javascript"><!--
+
+	function getScrolling()
+	{
+		var x = 0; var y = 0;if (self.pageXOffset || self.pageYOffset)
+		{
+			x = self.pageXOffset;
+			y = self.pageYOffset;
+		}
+		 else if ((document.documentElement && document.documentElement.scrollLeft)||(document.documentElement && document.documentElement.scrollTop))
+		{
+			x = document.documentElement.scrollLeft;
+			y = document.documentElement.scrollTop;
+		}
+		 else if (document.body) 
+		{
+			x = document.body.scrollLeft;
+			y = document.body.scrollTop;
+		}
+		return x + "," + y;
+	}
+	
+//--></script>
+</body>
+</html>

@@ -2,10 +2,12 @@ package com.SimpleCrawl;
 
 import java.awt.Font;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -139,11 +141,16 @@ public class IndeedCraw {
 	    	        Hyperlink link =createHelper.createHyperlink(HyperlinkType.URL);
 	    	        link.setAddress(writeStr);
 	            	cell.setHyperlink((org.apache.poi.ss.usermodel.Hyperlink) link);	            	            	
+	            
+	            	if (checkCitizen(writeStr)){
+	            		cell=rowhead.createCell(4);
+	            		cell.setCellValue("PHD");
+	            	}	            		
 	            }
 	       	}
 	        
 	        listCount=finalCount;
-	        
+	        System.out.println(listCount);
 	        inputstream.close();
 
             FileOutputStream outFile =new FileOutputStream(file);
@@ -170,6 +177,45 @@ public class IndeedCraw {
 			this.connect();
 			this.titleMatch();
 		}
+	}
+	private boolean checkCitizen(String urlStr){
+		URL url;
+		StringBuilder sb = new StringBuilder();
+		try {
+			url = new URL(urlStr); 
+		    URLConnection con;
+			con = url.openConnection();
+			con.setConnectTimeout(10000);//unit:milisecond
+		    con.setReadTimeout(10000);
+		    InputStream in = con.getInputStream();
+			InputStreamReader input0=new InputStreamReader(in);
+	        BufferedReader reader =new BufferedReader(input0);
+	        System.out.println(listCount);
+	        BufferedWriter writer1 = new BufferedWriter(new FileWriter("temp/"+listCount+".html"));
+	        String temp="";
+	        while((temp=reader.readLine())!=null){       
+	            sb.append(temp);
+	            writer1.write(temp+"\r\n");
+	        }
+	        temp=sb.toString();
+	       
+	        //writer1.write(reader.toString());      
+	        writer1.close();
+
+	        
+	        String regex="(PhD)|(Ph.D.)|(PHD)";
+			Pattern pattern=Pattern.compile(regex);
+	        Matcher matcher = pattern.matcher(temp);
+	        if(matcher.find()) {
+	        	return true;
+	        }     
+			return false;	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	    
 	}
 	
 	public void creatExcel(){

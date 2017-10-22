@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manufacturing Process Engineer</title>
+  <script src="/Scripts/GoogleAnalyticsHelper.js"></script>
+  
+  
+
+<link href="/Content/Division/LedgentTech/jquery-ui.theme.css" rel="stylesheet"/>
+<link href="/Content/Division/LedgentTech/ledgenttech.css" rel="stylesheet"/>
+      <link href="/Content/Division/LedgentTech/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <script>
+          gaInit('UA-5989970-13');
+          gaTrack(null, null);
+        </script>
+    <link href="/Content/jquery-ui.structure.css?v=636441433160100624" rel="stylesheet"/>
+<link href="/Content/site.css?v=636441433160100624" rel="stylesheet"/>
+
+    <script src="/Scripts/modernizr-2.6.2.js"></script>
+
+    
+    
+  
+  <script type="text/javascript">
+    function ChildJqueryStartupScript() {
+      $.ajaxSetup({
+        timeout: 60000,
+        type: "POST",
+        error: function(ajaxRequest, error) {
+          CloseLoadingWindow();
+          alert("An error occurred while processing your request. \n Please try again in five minutes.");
+        }
+      });
+
+      var getJobDetailsPath = function() {
+        return getPagePath() + 'Board=' + $("#Board").val();
+      }
+
+      var referJobModal = $("#referJobModal");
+      var referJobForm = $("#referJobForm");
+
+      referJobModal.dialog({
+        autoOpen: false,
+        modal: true,
+        width: 450,
+        resizable: false,
+        position: {
+          my: "top+50px",
+          at: "top",
+          of: $("#Header"),
+          collision: "none"
+        },
+        buttons: {
+          "Submit": function() {
+            if (referJobForm.valid()) {
+              $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: referJobForm.attr('action'),
+                data: referJobForm.serialize(),
+                success: function(data) {
+                  if (data.success) {
+                    toastr.success("Job Referral Sent");
+                    closeAndResetReferralForm();
+                  } else {
+                    $("#referJobForm").html(data);
+                  }
+                }
+              });
+            }
+
+          },
+          "Cancel": function() {
+            closeAndResetReferralForm();
+          }
+        }
+      });
+
+      $("#referJobLink").click(function() {
+        $("#ReferralJobId").val($("#JobId").val());
+        referJobModal.dialog("open");
+      });
+
+      var closeAndResetReferralForm = function() {
+        referJobForm.trigger("reset");
+        referJobModal.dialog("close");
+      };
+
+
+      var createAccountOptions = {
+        async: true,
+        success: function(data) {
+          CloseLoadingWindow();
+          if (data.success) {
+            //toastr.success("Job Application Processed");
+            jobApplyConfirmationModal.dialog("open");
+            var path = getJobDetailsPath();
+            gaTrack(path, 'Apply Confirmation - New User');
+            closeAndResetApplyJobForm();
+          } else {
+            $("#createAccountForm").html(data);
+            $("#createAccountErrorMessage").show();
+          }
+        }
+      };
+
+      var loginFormOptions = {
+        async: true,
+        success: function(data) {
+          CloseLoadingWindow();
+          if (data.success) {
+            //toastr.success("Job Application Processed");
+            jobApplyConfirmationModal.dialog("open");
+            var path = getJobDetailsPath();
+            gaTrack(path, 'Apply Confirmation - Returning User');
+            closeAndResetApplyJobForm();
+          } else {
+            $("#loginForm").html(data);
+            $("#loginFormErrorMessage").show();
+          }
+        }
+      };
+
+      var applyJobModal = $("#applyJobModal");
+
+      applyJobModal.dialog({
+        autoOpen: false,
+        modal: true,
+        width: 450,
+        resizable: false,
+        buttons: {
+          "Submit": function() {
+            if ($("#FormName").val() == "Login") {
+              if ($("#loginForm").valid()) {
+                $("#loginForm").submit();
+                OpenLoadingWindow("Processing...");
+              }
+            } else {
+              if ($("#createAccountForm").valid()) {
+                $("#createAccountForm").submit();
+                OpenLoadingWindow("Processing...");
+              }
+            }
+          },
+          "Cancel": function() {
+            closeAndResetApplyJobForm();
+          }
+        }
+        //,
+        //open: function(event, ui) {
+        //  var path = getJobDetailsPath();
+        //  gaTrack(path, 'Apply Modal');
+        //}
+      });
+
+      $(".applyLink").click(function(e) {
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+        $("#createAccountErrorMessage").hide();
+        $("#signUpHereMessage").text("Already have an account? ");
+        $("#signUpHereLink").text("Sign in here");
+        OpenLoadingWindow("Loading...");
+        getApplyJobPartialView("CreateAccount");
+        //applyJobModal.dialog("open");
+      });
+
+      var closeAndResetApplyJobForm = function() {
+        $("#createAccountErrorMessage").hide();
+        $("#createAccountForm").trigger("reset");
+        $("#FirstName").val("");
+        $("#LastName").val("");
+        $("#Email").val("");
+        $("#ZipCode").val("");
+        applyJobModal.dialog("close");
+      };
+
+      $("#signUpHereLink").click(function(e) {
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+        if ($("#FormName").val() == "Login") {
+          OpenLoadingWindow("Loading...");
+          getApplyJobPartialView("CreateAccount");
+          $("#signUpHereMessage").text("Already have an account? ");
+          $("#signUpHereLink").text("Sign in here");
+        } else {
+          OpenLoadingWindow("Loading...");
+          getApplyJobPartialView("Login");
+          $("#signUpHereMessage").text("Don't have an account? ");
+          $("#signUpHereLink").text("Sign up here");
+        }
+      });
+
+      var getApplyJobPartialView = function(view) {
+        $("#FormName").val(view);
+        $.ajax({
+          cache: false,
+          async: true,
+          type: "GET",
+          url: '/JobSearch/GetApplyJobPartialView',
+          data: { view: view },
+          success: function(data) {
+            $("#applyJobModalForm").html(data);
+            if (view == "Login") {
+              $("#LoginJobId").val($("#JobId").val());
+              $.validator.unobtrusive.parse($("#loginForm"));
+              $("#loginForm").ajaxForm(loginFormOptions);
+              if ($("#Email").val() == "") {
+                $("#Email").focus();
+              } else {
+                $("#Password").focus();
+              }
+            } else {
+              $("#ApplyJobId").val($("#JobId").val());
+              $.validator.unobtrusive.parse($("#createAccountForm"));
+              $("#createAccountForm").ajaxForm(createAccountOptions);
+              $("#FirstName").focus();
+            }
+            applyJobModal.dialog("open");
+            CloseLoadingWindow();
+          }
+        });
+      };
+
+      function validateEmail(email) {
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        return re.test(email);
+      }
+
+      var jobAlertModal = $("#jobAlertModal");
+
+      jobAlertModal.dialog({
+        autoOpen: false,
+        modal: true,
+        width: 450,
+        resizable: false,
+        buttons: {
+          "Submit": function() {
+            OpenLoadingWindow();
+            trimFormFields(jobAlertModal);
+            $("#jobAlertErrorMessage").html("");
+
+            var emailAddress = $("#emailAddress").val();
+
+            var dto = {};
+            dto.JobAlertDto = {};
+            dto.JobAlertDto.StateId = $("#StateId").val();
+            dto.JobAlertDto.City = $("#City").val();
+            dto.JobAlertDto.Distance = $("#Distance").val();
+            dto.JobAlertDto.City = dto.JobAlertDto.City.replace("-", " ").toUpperCase();
+            dto.JobAlertDto.DivisionName = $("#DivisionId").val();
+            dto.JobAlertDto.JobAlertFrequencyId = $("#JobAlertFrequencies").val();
+            dto.SelectedJobCategories = $("#SelectedJobCategories").val();
+            dto.SelectedJobTypes = $("#SelectedEmpTypes").val();
+            dto.EmailAddress = emailAddress;
+
+            if (validateEmail(emailAddress)) {
+              $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(dto),
+                url: "/API/V1/JobAlert/CreateJobAlert",
+                success: function(data) {
+                  if (data.JobAlertDto.JobAlertId == null) {
+                    toastr.error("Error Submitting Job Alert");
+                    CloseLoadingWindow();
+                  } else {
+                    sendConfirmationEmail(data);
+                  }
+                }
+              });
+            } else {
+              $("#jobAlertErrorMessage").html("Invalid Email Address");
+              CloseLoadingWindow();
+            }
+          },
+          "Cancel": function() {
+            closeAndResetJobAlertModal();
+          }
+        }
+      });
+
+      var sendConfirmationEmail = function(createJobAlertDto) {
+        var dto = {};
+        dto.ToEmail = createJobAlertDto.EmailAddress;
+        dto.JobAlertDto = createJobAlertDto.JobAlertDto;
+        dto.OtherJobsUrl = window.location.protocol + "//" + window.location.host + "/?StateId=" + createJobAlertDto.JobAlertDto.StateId + "&City=" + createJobAlertDto.JobAlertDto.City.replace(" ", "+") + "&SelectedJobCategories=" + createJobAlertDto.SelectedJobCategories + "&SelectedEmpTypes=" + createJobAlertDto.SelectedJobTypes + "&OrderBy=0&PageSize=25&page=1" + "&Distance=" + createJobAlertDto.JobAlertDto.Distance;
+        dto.UnsubscribeAllUrl = window.location.protocol + "//" + window.location.host + "/jobsearch/unsubscribe?EncryptEmailedUserId=" + createJobAlertDto.EncryptEmailedUserId;
+        dto.UnsubscribeUrl = dto.UnsubscribeAllUrl + "&JobAlertId=" + createJobAlertDto.JobAlertDto.JobAlertId;
+
+        $.ajax({
+          cache: false,
+          async: true,
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(dto),
+          url: "/API/V1/JobAlertEmail/SendConfirmationEmail",
+          success: function(data) {
+            if (data == false) {
+              toastr.error("Error Submitting Job Alert");
+              CloseLoadingWindow();
+            } else {
+              toastr.success("Job Alert Submitted");
+              closeAndResetJobAlertModal();
+              CloseLoadingWindow();
+            }
+          }
+        });
+      };
+
+      var closeAndResetJobAlertModal = function() {
+        $("#emailAddress").val("");
+        $("#jobAlertErrorMessage").html("");
+        jobAlertModal.dialog("close");
+      };
+
+      $(".createAlert").click(function(e) {
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+
+        jobAlertModal.dialog("open");
+      });
+
+      var jobApplyConfirmationModal = $("#jobApplyConfirmationModal");
+
+      jobApplyConfirmationModal.dialog({
+        autoOpen: false,
+        modal: true,
+        width: 500,
+        resizable: false,
+        buttons: {
+          "OK": function() {
+            $(this).dialog("close");
+          }
+        }
+      });
+
+      if ($("#ApplyNow").val().toLowerCase() == "true") {
+        $("#createAccountErrorMessage").hide();
+        $("#signUpHereMessage").text("Already have an account? ");
+        $("#signUpHereLink").text("Sign in here");
+        OpenLoadingWindow("Loading...");
+        getApplyJobPartialView("CreateAccount");
+        //applyJobModal.dialog("open");
+      }
+
+    }
+  </script>
+
+    
+    
+    <script src="/Scripts/jquery.js"></script>
+
+    <script src="/bundles/jqueryui?v=E7lIEToFST0suvmnCT4N1CHOID3KD1VE-Kg-CN2PUVE1"></script>
+
+    
+    <script src="/Scripts/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.min.js" type="text/javascript"></script>  
+    <script src="/Scripts/toastr.min.js" type="text/javascript"></script>
+    <link href="/Content/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/Scripts/jquery.form.js" type="text/javascript"></script>
+    <script src="/Scripts/customValidation.js" type="text/javascript"></script>
+
+  <script type="text/javascript">           
+    (function ($) {
+      $(function () {                
+        $("#CustomMessageModal").dialog({
+          autoOpen: false,
+          modal: true,
+          width: 400,
+          resizable: false,
+          buttons: [{
+            text: "Ok",
+            click: function () { $(this).dialog("close"); }
+          }]
+        });
+
+        $("#LoadingModal").dialog({
+          autoOpen: false,
+          modal: true,
+          width: 400,
+          resizable: false
+        });
+
+        //Put non shared startup scripts in child function with same name. 
+        ChildJqueryStartupScript();                
+      });        
+    })(jQuery)
+  </script>
+  <script src="https://use.typekit.net/iip0xjx.js"></script>
+  <script>try { Typekit.load({ async: true }); } catch (e) { }</script>
+</head>
+<body>
+    <header>
+<div id="Header">
+    <div id="void" class="void-header">
+        <div class="content-top">
+            <div class="content-top-void">
+                <div class="module">
+                    <p class="serif">
+                        Business Lines of
+                        <br>
+                        Roth Staffing Companies, L.P.
+                    </p>
+                </div>
+                <div class="module">
+                    <ul class="business_line_logos">
+                        <li>
+                            <a class="logo roth" target="_blank" title="Roth Staffing Companies, L.P." href="http://rothstaffing.com/">
+                                <span>Roth Staffing Companies, L.P.</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="logo ult" target="_blank" title="Ultimate Staffing Services" href="http://ultimatestaffing.com/">
+                                <span>Ultimate Staffing Services</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="logo lg" target="_blank" title="Ledgent Finance & Accounting" href="http://www.ledgent.com/accounting/index1.chtml">
+                                <span>Ledgent</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="logo am" target="_blank" title="Adams & Martin Group" href="http://www.adamsmartingroup.com/">
+                                <span>Adams & Martin Group</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="logo lgtech" target="_blank" title="Ledgent Technology & Engineering" href="/">
+                                <span>Ledgent Technology & Engineering</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="logo at" target="_blank" title="About Talent" href="http://abouttalent.com/">
+                                <span>About Talent</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-middle">
+            <div class="content-middle-void">
+                <div class="module">
+                    <h1 id="logo">
+                        <a title="Ledgent Technology & Engineering" href="/">
+                            <span>Ledgent Technology & Engineering</span>
+                        </a>
+                    </h1>
+                </div>
+                <div class="module">
+                    <p class="serif">Specialists in staffing IT, Technical, Engineering and Scientific Professionals</p>
+                </div>
+                <div class="module">
+                    <ul class="social">
+                        <li>
+                            <a class="facebook shadow" target="_blank" title="Facebook" href="http://www.facebook.com/pages/Ledgent-Technology/101216323285966">
+                                <span>Facebook</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="linkedin shadow" target="_blank" title="LinkedIn" href="http://www.linkedin.com/company/ledgent">
+                                <span>LinkedIn</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="rss shadow" target="_blank" title="RSS Feed" href="http://www.rothstaffing.com/candidate/?feed=rss2">
+                                <span>Blog</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-bottom">
+            <div class="content-bottom-void">
+                <nav>
+                    <ul class="navigation">
+                        <li>
+                            <a title="Job Seekers" href="http://www.ledgent.com/technology/technology_career/career_center.chtml">
+                                <span>for</span>
+                                Job Seekers
+                            </a>
+                        </li>
+                        <li>
+                            <a title="Business Clients" href="http://www.ledgent.com/technology/technology_business/business_center.chtml">
+                                <span>for</span>
+                                Business Clients
+                            </a>
+                        </li>
+                        <li>
+                            <a title="About Us" href="http://www.ledgent.com/technology/technology_info/about.chtml">About Us</a>
+                        </li>
+                        <li>
+                            <a title="News" href="http://www.ledgent.com/technology/technology_info/news.chtml">News</a>
+                        </li>
+                        <li>
+                            <a title="Purpose:full" href="http://www.purposefull5.org/">Purpose:full</a>
+                        </li>
+                        <li>
+                            <a title="Login" href="http://www.ledgent.com/technology/technology_info/login.chtml">Login</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>    </header>
+    
+
+
+  <div id="jobDetailsMain">
+  <div id="backToSearch">
+      <a href="/"><img src="/Content/Images/left-arrow.png"/> Back to Search</a>
+      <input id="SearchUrl" name="SearchUrl" type="hidden" value="/" />
+  </div>
+  <div class="jobDetailsTitle Fl">
+    <h1 id="jobTitle">Manufacturing Process Engineer</h1>
+    <p id="applyJobPostedDate"><span>Date Posted: </span>9/28/2017</p>
+    <a class="applyLink serif" href="#">Apply Now</a>   
+        <div id="followus-panel">
+            <div class="followus-panel-inner followus-panel-inner-first">
+                     <script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+      <script type="IN/FollowCompany" data-id="13333" data-counter="right"></script>
+    
+            </div>
+            
+            <div class="followus-panel-inner">
+                     <a href="https://twitter.com/Job_LedgentTech" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false">Follow @Job_LedgentTech</a>
+      <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + '://platform.twitter.com/widgets.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'twitter-wjs');</script>
+
+
+    
+            </div>
+          </div><br/>
+  </div>  
+    <div id="jobDetailsBody">
+      <div id="jobDetailsLeft">
+        <div id="jobDescription">
+          <h4>Job Description</h4>
+          <p>Ultimate Staffing is looking for a Manufacturing Process Engineer for our client with the below background.<br><br>Title: Manufacturing Process Engineer<br>Duration: 6+ months<br>Location: Fremont, CA<br><br><strong>Role and responsibilities:</strong><ul><li>Implementing new process for manufacturing during the build cycle</li><li>Background with high complex, low volume manufacturing</li><li>IT equipment manufacturing is a good plus along with semiconductor experience</li><li>Portions of the assembly are customer configured, this person needs to implement new process in the assembly</li><li>Goal is to have improved tooling, converting process to a line flow</li><li>Modifying the process - Old process was learned all parts before its produced, New process is parts are learned one by one</li><li>Exp. In cleanroom is preferred</li><li>Skills in building the process from ground up</li><li>Six Sigma Lean is preferred</li><li>Tools: Assembly large equipment, troubleshoot & maintain</li><li>Looking for an individual who can roll up sleeves and work will all teams from the floor production to engineering team</li><li>Experience working of Etch and Surface Cleaning</li></ul>
+
+We are an equal opportunity employer.</p>
+        </div>
+        <div id="jobRequirements">
+          <h4>Job Requirements</h4>
+          <p>Skills Required:<br />
+â€? 5+ years of experience in Engineering in a manufacturing environment.<br />
+â€? BS degree in Mechanical Engineering, Electromechanical Engineering or related field.<br />
+â€? Possesses effective leadership qualities.<br />
+â€? Good coordination skills to work with various departments.<br />
+â€? Excellent communication skills and ability to problem solve.<br />
+â€? Thorough knowledge about the methods and techniques of manufacturing.<br />
+â€? Well organized and attention to details.<br />
+<br />
+- Experience working of Etching and Surface Cleaning<br />
+ Background with high complex, low volume manufacturing<br />
+- IT equipment manufacturing is a good plus along with semiconductor experience<br />
+ Skills in building the process from ground up<br />
+- Tools: Assembly large equipment, troubleshoot & maintain<br />
+<br />
+Environmental, Health & Safety Requirements:<br />
+â€? Successful completion of required Safety training.<br />
+â€? Ensure equipment and machines are maintained in safe operating condition.<br />
+â€? Report to the Safety Officer any unsafe or unhealthy condition which cannot be corrected.<br />
+â€? Follow all safety and health regulations and work practices, including personal protective equipment where applicable.<span class="hiddenEmail"><br />Posted By: kinguyen@ledgent.com</span></p>
+        </div>
+        <a class="applyLink serif btnLeft" href="#">Apply Now</a>
+        <a id="referJobLink" class="referJobLink serif btnLeft" href="#">Send to a Friend</a>
+      </div>
+      <div id="jobDetailsRight">
+        <div id="jobSnapshot">
+          <h4>Job Snapshot</h4>
+          <ul>
+            <li id="employeeTypeListItem">Employee Type:<span>Full-Time</span></li>
+            <li id="jobLocationListItem">Location:<span>Fremont, CA</span></li>
+            <li id="jobTypeListItem">Job Type:<span>Engineering</span></li>
+            <li id="experienceListItem">Experience:<span>Not Specified</span></li>
+            <li id="educationListItem">Education:<span>Not Specified</span></li>
+            <li id="datePostedListItem">Date Posted:<span>9/28/2017</span></li>
+              <li id="contactListItem">Contact: <span>Kim Nguyen</span> (408) 418-1867</li>
+                      <li id="PayRange">Pay Range: <span>$0.00 - $0.00 Annually</span></li>
+          </ul>
+        </div>
+        <div id="jobDetailsJobAlert">
+          <h5>Get Job Alerts<span>by Email</span></h5>
+          <ul>
+            <li>Receive alerts with new job opportunities that match your interests</li>
+            <li>Receive relevant communications and updates from our organization</li>
+          </ul>
+          <p class="btn serif" style="width: 100%;">
+            <a class="createAlert" href="#">Sign Up Now</a>
+          </p>
+        </div>
+      </div>
+      <br style="clear: both;"/>
+      <span class="FnB">
+        Job Reference: JO-1709-10751
+      </span>
+    </div>
+</div>
+
+<input data-val="true" data-val-number="The field JobId must be a number." id="JobId" name="JobId" type="hidden" value="70055" />
+<input data-val="true" data-val-number="The field StateId must be a number." data-val-required="The StateId field is required." id="StateId" name="StateId" type="hidden" value="6" />
+<input id="City" name="City" type="hidden" value="fremont" />
+<input data-val="true" data-val-number="The field Distance must be a number." id="Distance" name="Distance" type="hidden" value="15" />
+<input id="DivisionId" name="DivisionId" type="hidden" value="4" />
+<input id="SelectedJobCategories" name="SelectedJobCategories" type="hidden" value="JC14" />
+<input id="SelectedEmpTypes" name="SelectedEmpTypes" type="hidden" value="ET1" />
+<input id="FormName" name="FormName" type="hidden" value="" />
+<input data-val="true" data-val-required="The ApplyNow field is required." id="ApplyNow" name="ApplyNow" type="hidden" value="False" />
+<input id="Board" name="Board" type="hidden" value="" />
+
+<div id="referJobModal" title="Refer Job" style="display: none;">
+  <div class="modal-logo">
+        <h2></h2>       
+  </div><br/>
+  <h3>Refer a job to a friend</h3>
+  
+<form action="/JobSearch/ReferJob" id="referJobForm" method="post"><label for="SendersName">Your Name</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Your name is too long." data-val-length-max="100" data-val-regex="Your name is using invalid characters." data-val-regex-pattern="^\s*[a-zA-Z]+(([\&#39;\,\.\-\s])?[a-zA-Z])*$" data-val-required="Enter your name." id="SendersName" name="SendersName" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="SendersName" data-valmsg-replace="true"></span><br/>
+<label for="SendersEmail">Email Address</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Your email address is too long." data-val-length-max="100" data-val-regex="Your email address is not valid." data-val-regex-pattern="^[\w\.=-]+@[\w\.-]+\.[\w]{2,}$" data-val-required="Enter your email address." id="SendersEmail" name="SendersEmail" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="SendersEmail" data-valmsg-replace="true"></span><br/>
+<label for="RecipientsName">Recipient&#39;s Name</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Recipient&#39;s name is too long." data-val-length-max="100" data-val-regex="Recipient&#39;s name is using invalid characters." data-val-regex-pattern="^\s*[a-zA-Z]+(([\&#39;\,\.\-\s])?[a-zA-Z])*$" data-val-required="Enter the recipient&#39;s name." id="RecipientsName" name="RecipientsName" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="RecipientsName" data-valmsg-replace="true"></span><br/>
+<label for="RecipientsEmail">Recipient&#39;s Email</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Recipient&#39;s email address is too long." data-val-length-max="100" data-val-regex="Recipient&#39;s email address is not valid." data-val-regex-pattern="^[\w\.=-]+@[\w\.-]+\.[\w]{2,}$" data-val-required="Enter the recipient&#39;s email address." id="RecipientsEmail" name="RecipientsEmail" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="RecipientsEmail" data-valmsg-replace="true"></span><br/>
+<label for="SendersMessage">Message for recipient</label><br/>
+<textarea class="text-box multi-line" data-val="true" data-val-length="Your message is too long." data-val-length-max="2000" data-val-regex="Your message is using invalid characters." data-val-regex-pattern="[\s\w\&#39;\,\.\-\?\!\(\)\[\]\/\\\{\}\&quot;\&#39;\@\#\$\%\^\&amp;\*\-\|\+\=\`\~\:\;]*" id="SendersMessage" name="SendersMessage">
+</textarea><br/>
+<span class="field-validation-valid" data-valmsg-for="SendersMessage" data-valmsg-replace="true"></span><br/>
+<input data-val="true" data-val-number="The field ReferralJobId must be a number." data-val-required="The ReferralJobId field is required." id="ReferralJobId" name="ReferralJobId" type="hidden" value="0" /></form>
+</div>
+
+<div id="applyJobModal" title="Apply for job" style="line-height: 1;display: none;">
+  <div class="modal-logo">
+      <h2></h2>       
+  </div><br/>
+  <h3>Apply Now!</h3>
+  <div id="signUpHereDiv"><span id="signUpHereMessage">Don't have an account? </span><a id="signUpHereLink" href="#">Sign up here</a></div>
+  <div id="applyJobModalForm">
+<form action="/JobSearch/ApplyJob" enctype="multipart/form-data" id="createAccountForm" method="post">  <div id="applyJobFirstName"">
+    <label for="FirstName">First Name</label><br/>
+    <input class="text-box single-line" data-val="true" data-val-length="First Name is too long." data-val-length-max="50" data-val-regex="Your first name is using invalid characters." data-val-regex-pattern="^\s*[a-zA-Z]+(([\&#39;\,\.\-\s])?[a-zA-Z])*$" data-val-required="Your first name is required." id="FirstName" name="FirstName" type="text" value="" /><br/>
+    <span class="field-validation-valid" data-valmsg-for="FirstName" data-valmsg-replace="true"></span><br/>
+  </div>
+  <div id="applyJobLastName"">
+    <label for="LastName">Last Name</label><br/>
+    <input class="text-box single-line" data-val="true" data-val-length="Last Name is too long." data-val-length-max="50" data-val-regex="Your last name is using invalid characters." data-val-regex-pattern="^\s*[a-zA-Z]+(([\&#39;\,\.\-\s])?[a-zA-Z])*$" data-val-required="Your last name is required." id="LastName" name="LastName" type="text" value="" /><br/>
+    <span class="field-validation-valid" data-valmsg-for="LastName" data-valmsg-replace="true"></span><br/>
+  </div><br/>
+<label for="Email">Email Address</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Your email address is too long." data-val-length-max="100" data-val-regex="Your email address is not valid." data-val-regex-pattern="^[\w\.=-]+@[\w\.-]+\.[\w]{2,}$" data-val-required="Your email address is required." id="Email" name="Email" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span><br/>
+<label for="ZipCode">Zip Code</label><br/>
+<input class="text-box single-line" data-val="true" data-val-length="Zip code should be 5 digits." data-val-length-max="5" data-val-length-min="5" data-val-regex="Zip code should be numbers only." data-val-regex-pattern="^\d+\s*$" data-val-required="Your zip code is required." id="ZipCode" name="ZipCode" type="text" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="ZipCode" data-valmsg-replace="true"></span><br/>
+<label for="Password">Password</label><br/>
+<input data-val="true" data-val-length="Your password should be at least 6 characters and a maximum of 32." data-val-length-max="32" data-val-length-min="6" data-val-required="Please enter a password." id="Password" name="Password" type="password" /><br/>
+<span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span><br/>
+<label for="ConfirmPassword">Confirm Password</label><br/>
+<input data-val="true" data-val-equalto="&#39;Confirm Password&#39; and &#39;Password&#39; do not match." data-val-equalto-other="*.Password" data-val-length="Confirm password should be at least 6 characters and a maximum of 32." data-val-length-max="32" data-val-length-min="6" data-val-required="Please enter confirm password." id="ConfirmPassword" name="ConfirmPassword" type="password" /><br/>
+<span class="field-validation-valid" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span><br/>
+<label for="File">Upload Resume (Word or PDF only)</label><br/>
+<input data-val="true" data-val-excludecharacter="Filename cannot contain special characters." data-val-excludecharacter-excludecharacter="&lt;,>,&quot;,:,/,\,|,?,*" data-val-fileextensions="Only .doc, .docx, or .pdf files allowed for upload." data-val-fileextensions-fileextensions="doc,docx,pdf" data-val-maxfilesize="File size cannot be greater than 1MB." data-val-maxfilesize-maxfilesize="1048576" data-val-minfilesize="Attempting to upload an empty resume." data-val-minfilesize-minfilesize="1" id="File" name="File" type="file" value="" /><br/>
+<span class="field-validation-valid" data-valmsg-for="File" data-valmsg-replace="true"></span><br/>
+  <div id="createAccountErrorMessage" class="error" style="margin-bottom: 5px;"></div>
+<input data-val="true" data-val-number="The field ApplyJobId must be a number." data-val-required="The ApplyJobId field is required." id="ApplyJobId" name="ApplyJobId" type="hidden" value="0" /></form>  </div>
+  <div><b>By clicking Submit you are agreeing to our Terms & Conditions, Privacy Policy, and Profile Agreement below.</b></div>
+  <br />
+  <ul class="otherLinks">
+    <li><a class="PrivacyLink" href="http://www.ledgent.com/technology/technology_info/privacy.chtml" target="_blank">Privacy Policy</a></li>
+    <li><a class="TermsLink" href="http://www.ledgenttech.com/terms-and-conditions/" target="_blank">Terms & Conditions</a></li>
+    <li><a class="ProfileAgreement" href="/Home/ProfileAgreement" target="_blank">Profile Agreement</a></li>
+  </ul>
+</div>
+
+<div id="jobAlertModal" title="Job Alert" class="modal" style="line-height: 1;display: none;">
+    <div class="modal-logo">
+        <h2></h2>       
+    </div><br/>
+    <h3>SIGN UP FOR JOB ALERTS</h3>
+    <label for="Email_Address">Email Address</label><br/>
+    <input id="emailAddress" name="emailAddress" style="width: 99%; margin-bottom: 5px;" type="text" value="" />
+    <div id="jobAlertErrorMessage" style="color: red;"></div>
+    
+    <label for="Frequency">Frequency</label><br/>    
+    <select id="JobAlertFrequencies" name="JobAlertFrequencies"><option value="1">Daily</option>
+<option value="2">Weekly</option>
+</select>        
+    
+    <br/>
+    <br/>
+    <div><b>By clicking Submit you are agreeing to our Terms & Conditions and Privacy Policy below.</b></div>     
+    <br/>
+    <ul class="otherLinks">
+      <li><a class="PrivacyLink" href="http://www.ledgent.com/technology/technology_info/privacy.chtml">Privacy Policy</a></li>
+      <li><a class="TermsLink" href="http://www.ledgenttech.com/terms-and-conditions/">Terms & Conditions</a></li>
+    </ul>
+</div>
+
+<div id="jobApplyConfirmationModal" title="Job Application" style="display: none;">
+  <div class="modal-logo">
+        <h2></h2>       
+    </div><br/>
+  <p>Thank you for applying to the Manufacturing Process Engineer position. We received your application and will contact you shortly.</p>
+</div>
+
+    
+    
+    
+    <div id="LoadingModal" style="text-align: center; display: none;">
+        
+       <h4 id="LoadingMessage">Loading...</h4>
+       <br />
+       <div id="LoadingImage"></div> 
+      </div>
+    <div id="CustomMessageModal" style="text-align: left; display: none;">
+        <br /><label></label>
+    </div>
+    
+    <footer>
+<div id="Footer">
+    <div class="void-footer">
+        <div class="module first">
+            <p>
+                <a title="Call us at 866.800.3051" href="tel:8668003051">866.800.3051</a>
+            </p>
+            <p>
+                Â©Copyright 1994-2017
+                <br>
+                Roth Staffing Companies, L.P.
+                <br>
+                All Rights Reserved.
+            </p>
+        </div>
+        <div class="module second">
+            <ul class="social">
+                <li>
+                    <a target="_blank" title="Facebook" href="http://www.facebook.com/pages/Ledgent-Technology/101216323285966">
+                        <img width="25" height="25" alt="Facebook" src="/Content/images/fb_25x25.jpg">
+                    </a>
+                </li>
+                <li>
+                    <a target="_blank" title="LinkedIn" href="http://www.linkedin.com/company/ledgent">
+                        <img width="25" height="25" alt="LinkedIn" src="/Content/images/li_25x25.jpg">
+                    </a>
+                </li>
+                <li>
+                    <a target="_blank" title="RSS Feed" href="http://www.rothstaffing.com/candidate/?feed=rss2">
+                        <img width="25" height="25" alt="RSS" src="/Content/images/rss_25x25.jpg">
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="module third">
+            <p>
+                <img alt="ACA Compliance" src="/Content/images/aca_compliance.png">
+            </p>
+        </div>
+        <div class="module fourth">
+            <ul class="first">
+                <li>
+                    <a title="Search Job Openings" href="http://careers.tech.ledgent.com">Search Job Openings</a>
+                </li>
+                <li>
+                    <a title="Apply Online" href="http://www.ledgent.com/technology/technology_career/apply_online.chtml">Apply Online</a>
+                </li>
+                <li>
+                    <a title="About Us" href="http://www.ledgent.com/technology/technology_info/about.chtml">About Us</a>
+                </li>
+                <li>
+                    <a title="Contact Us" href="http://www.ledgenttech.com/contact-us/">Contact Us</a>
+                </li>
+            </ul>
+            <ul class="second">
+                <li>
+                    <a title="Business Services" href="http://www.ledgent.com/technology/technology_business/business_center.chtml">Business Services</a>
+                </li>
+                <li>
+                    <a title="Login" href="http://www.ledgent.com/technology/technology_info/login.chtml">Login</a>
+                </li>
+                <li>
+                    <a title="Privacy Policy" href="http://www.ledgenttech.com/privacy-policy/">Privacy Policy</a>
+                </li>
+                <li>
+                    <a title="Terms & Conditions" href="http://www.ledgenttech.com/terms-and-conditions/">Terms & Conditions</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>    </footer>
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+var _analytics_scr = document.createElement('script');
+_analytics_scr.type = 'text/javascript'; _analytics_scr.async = true; _analytics_scr.src = '/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=1256673699';
+var _analytics_elem = document.getElementsByTagName('script')[0]; _analytics_elem.parentNode.insertBefore(_analytics_scr, _analytics_elem);
+})();
+// ]]>
+</script></body>
+</html>
