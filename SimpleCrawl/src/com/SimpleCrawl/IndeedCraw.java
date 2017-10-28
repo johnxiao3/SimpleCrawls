@@ -142,10 +142,10 @@ public class IndeedCraw {
 	    	        link.setAddress(writeStr);
 	            	cell.setHyperlink((org.apache.poi.ss.usermodel.Hyperlink) link);	            	            	
 	            
-	            	if (checkCitizen(writeStr)){
-	            		cell=rowhead.createCell(4);
-	            		cell.setCellValue("PHD");
-	            	}	            		
+	            	//if (checkCitizen(writeStr)){
+	            	//	cell=rowhead.createCell(4);
+	            	//	cell.setCellValue("PHD");
+	            	//}	            		
 	            }
 	       	}
 	        
