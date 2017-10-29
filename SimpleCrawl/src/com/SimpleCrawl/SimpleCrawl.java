@@ -14,7 +14,7 @@ public class SimpleCrawl {
 		A.test();
 		A.creatExcel();
 		try {
-			A.printTitle(500);
+			A.printTitle(100);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

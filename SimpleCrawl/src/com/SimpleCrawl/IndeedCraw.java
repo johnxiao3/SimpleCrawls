@@ -178,6 +178,8 @@ public class IndeedCraw {
 			this.titleMatch();
 		}
 	}
+	//it is not working
+	//download the page is not good
 	private boolean checkCitizen(String urlStr){
 		URL url;
 		StringBuilder sb = new StringBuilder();
